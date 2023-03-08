@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Delivery {
+  id  Int @id @default(autoincrement())
+  orderNumber Int
+  deliveryDate DateTime
+  customer String
+  model String
+  color String
+  chassi String
+  seller String
+  status Status @default(TOBEDELIVERED)
+}
+
+enum Status {
+  TOBEDELIVERED
+  DELIVERED
+  DELAYED
+}
