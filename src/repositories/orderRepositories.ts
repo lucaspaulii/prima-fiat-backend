@@ -36,7 +36,7 @@ async function getByOrderId(orderId: number, restricted: Boolean) {
 }
 
 async function getById(id: number) {
-  const order = prisma.delivery.findMany({
+  const order = prisma.delivery.findUnique({
     where: {
       id,
     },

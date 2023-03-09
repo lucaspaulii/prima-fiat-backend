@@ -35,12 +35,16 @@ async function getByOrderId(orderId: number) {
   if (!order || order.length === 0) {
     throw notFoundError();
   }
+  return order;
 }
 
 async function deliverOrder(id: number) {
   const orderExists = await orderRepository.getById(id);
-  if (!orderExists || orderExists.length === 0) {
+  if (!orderExists) {
     throw notFoundError();
+  }
+  if (orderExists.status === "DELIVERED" || orderExists.status === "DELAYED") {
+    throw conflictError("Pedido já finalizado!");
   }
 
   await orderRepository.deliverStatus(id);
@@ -48,8 +52,11 @@ async function deliverOrder(id: number) {
 
 async function delayOrder(id: number, newDeliverDate: string) {
   const orderExists = await orderRepository.getById(id);
-  if (!orderExists || orderExists.length === 0) {
+  if (!orderExists) {
     throw notFoundError();
+  }
+  if (orderExists.status === "DELIVERED" || orderExists.status === "DELAYED") {
+    throw conflictError("Pedido já finalizado!");
   }
   const newOrder = await orderRepository.delayStatusAndCreate(
     id,
