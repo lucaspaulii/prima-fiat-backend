@@ -47,7 +47,7 @@ async function getByOrderId(req: Request, res: Response) {
   const orderId = req.params.orderId;
 
   try {
-    if (orderId.toString().length > 7) {
+    if (orderId.toString().length > 12) {
       throw invalidInput();
     }
     const order = await orderServices.getByOrderId(Number(orderId));
@@ -66,6 +66,8 @@ async function getByOrderId(req: Request, res: Response) {
 async function delayAndCreateNew(req: Request, res: Response) {
   const id = req.params.id;
   const date = req.query.newDate;
+  console.log(id);
+  console.log(date);
   if (!id || !date) {
     return res.status(400).send("date or id invalid");
   }
