@@ -10,10 +10,17 @@ async function post(insertOrder: InsertOrder) {
 }
 
 async function get() {
-  const now: Date = new Date(dayjs().format("YYYY-MM-DD"));
+  const now = dayjs().format("YYYY-MM-DD") + "T00:00:00.000Z";
+  const tomorow = dayjs().add(1, "d").format("YYYY-MM-DD") + "T00:00:00.000Z";
   const todaysOrder = await prisma.delivery.findMany({
     where: {
-      deliveryDate: now,
+      deliveryDate: {
+        lte: tomorow,
+        gte: now,
+      },
+    },
+    orderBy: {
+      deliveryDate: "asc",
     },
   });
   return todaysOrder;
@@ -36,7 +43,7 @@ async function getByOrderId(orderId: number, restricted: Boolean) {
 }
 
 async function getById(id: number) {
-  const order = prisma.delivery.findMany({
+  const order = prisma.delivery.findUnique({
     where: {
       id,
     },
@@ -68,7 +75,7 @@ async function delayStatusAndCreate(id: number, newDeliverDate: string) {
   delete order.status;
   const newOrder = orderRepository.post({
     ...order,
-    deliveryDate: newDeliverDate
+    deliveryDate: newDeliverDate,
   });
   return newOrder;
 }
